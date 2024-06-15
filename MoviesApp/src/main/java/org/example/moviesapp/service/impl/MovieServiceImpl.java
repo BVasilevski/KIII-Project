@@ -4,9 +4,11 @@ import org.example.moviesapp.exception.MovieNotFoundException;
 import org.example.moviesapp.model.Movie;
 import org.example.moviesapp.repository.MovieRepository;
 import org.example.moviesapp.service.MovieService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class MovieServiceImpl implements MovieService {
 
     private final MovieRepository movieRepository;
