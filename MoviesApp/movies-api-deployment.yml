@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movies-api-deployment
+  namespace: moviesapp
+  labels:
+    app: movies-api
+spec:
+  selector:
+    matchLabels:
+      app: movies-api
+  template:
+    metadata:
+      labels:
+        app: movies-api
+    spec:
+      containers:
+        - name: movies-api
+          image: bojan0110/moviesapi
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          env:
+            - name: db_root_password
+              valueFrom:
+                secretKeyRef:
+                  name: movies-api-secrets
+                  key: db_root_password
+            - name: db_name
+              value: movies
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: movies-api-service
+  namespace: moviesapp
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: movies-api
+  type: LoadBalancer

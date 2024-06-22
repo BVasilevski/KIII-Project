@@ -1,19 +1,19 @@
-FROM maven:3.8.5-openjdk-17-slim AS build
-WORKDIR /workspace/app
+FROM python:3.6-slim
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
+RUN apt-get clean \
+    && apt-get -y update
 
-RUN sed -i 's/\r$//' mvnw
-RUN chmod +x mvnw
+RUN apt-get -y install \
+    nginx \
+    python3-dev \
+    build-essential
 
-RUN ./mvnw clean install -DskipTests
+WORKDIR /app
 
-FROM openjdk:17-slim
-VOLUME /tmp
+COPY requirements.txt /app/requirements.txt
+RUN pip install -r requirements.txt --src /usr/local/src
 
-COPY --from=build /workspace/app/target/*.jar app.jar
+COPY . .
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+EXPOSE 5000
+CMD [ "python", "movies-api.py" ]
